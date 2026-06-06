@@ -206,45 +206,158 @@ def forgot_password(request):
 
 def vendors_page(request):
 
-    # Only admin access
+    # Admin only
 
     if request.session.get('role') != 'admin':
         return redirect('dashboard')
 
+    cursor = connection.cursor()
+
+    # Add Vendor
+
+    if request.method == "POST":
+
+        company_name = request.POST.get(
+            'company_name'
+        )
+
+        gst_number = request.POST.get(
+            'gst_number'
+        )
+
+        contact_person = request.POST.get(
+            'contact_person'
+        )
+
+        email = request.POST.get(
+            'email'
+        )
+
+        phone = request.POST.get(
+            'phone'
+        )
+
+        category = request.POST.get(
+            'category'
+        )
+
+        status = request.POST.get(
+            'status'
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO vendors
+            (
+                company_name,
+                gst_number,
+                contact_person,
+                email,
+                phone,
+                category,
+                status
+            )
+            VALUES
+            (%s,%s,%s,%s,%s,%s,%s)
+            """,
+            [
+                company_name,
+                gst_number,
+                contact_person,
+                email,
+                phone,
+                category,
+                status
+            ]
+        )
+
+    # Fetch Vendors
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM vendors
+        """
+    )
+
+    vendors = cursor.fetchall()
+
     return render(
         request,
-        'vendors.html'
+        'vendors.html',
+        {
+            'vendors': vendors
+        }
     )
 
 # DASHBOARD
 
 def dashboard(request):
 
-    # Without login dashboard open na ho
     if 'email' not in request.session:
         return redirect('login')
 
     email = request.session.get('email')
     role = request.session.get('role')
 
+    cursor = connection.cursor()
+
+    # Vendors count
+
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM vendors
+        """
+    )
+
+    vendor_count = cursor.fetchone()[0]
+
+    # RFQ count
+
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM rfq
+        """
+    )
+
+    rfq_count = cursor.fetchone()[0]
+
+    # Approval count
+
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM approvals
+        """
+    )
+
+    approval_count = cursor.fetchone()[0]
+
+    # Invoice count
+
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM invoices
+        """
+    )
+
+    invoice_count = cursor.fetchone()[0]
+
     return render(
         request,
         'dashboard.html',
         {
             'email': email,
-            'role': role
+            'role': role,
+            'vendor_count': vendor_count,
+            'rfq_count': rfq_count,
+            'approval_count': approval_count,
+            'invoice_count': invoice_count
         }
     )
-
-
-# VENDOR PAGE (ADMIN ONLY)
-
-def vendors_page(request):
-
-    if request.session.get('role') != 'admin':
-        return redirect('dashboard')
-
-    return render(request, 'vendors.html')
 
 
 # RFQ PAGE

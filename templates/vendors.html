@@ -4,37 +4,130 @@
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-4">
+        Vendor Management
+    </h2>
 
-        <h2>
-            Vendor Management
-        </h2>
+    <!-- Add Vendor Form -->
 
-        <button
-        class="btn btn-primary">
+    <div class="card shadow p-4 mb-4">
 
-            + Add Vendor
+        <form method="POST">
 
-        </button>
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="company_name"
+                    class="form-control"
+                    placeholder="Company Name"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="gst_number"
+                    class="form-control"
+                    placeholder="GST Number">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="contact_person"
+                    class="form-control"
+                    placeholder="Contact Person">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Email">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="phone"
+                    class="form-control"
+                    placeholder="Phone">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="category"
+                    class="form-control"
+                    placeholder="Category">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <select
+                    name="status"
+                    class="form-control">
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+            class="btn btn-primary">
+
+                Add Vendor
+
+            </button>
+
+        </form>
 
     </div>
 
+    <!-- Vendor Table -->
+
     <div class="card shadow p-3">
 
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered">
 
             <thead class="table-dark">
 
                 <tr>
 
                     <th>ID</th>
-                    <th>Company Name</th>
-                    <th>GST Number</th>
-                    <th>Contact Person</th>
+                    <th>Company</th>
+                    <th>GST</th>
+                    <th>Contact</th>
                     <th>Email</th>
                     <th>Phone</th>
+                    <th>Category</th>
                     <th>Status</th>
-                    <th>Action</th>
 
                 </tr>
 
@@ -42,79 +135,22 @@
 
             <tbody>
 
-                <tr>
-
-                    <td>1</td>
-                    <td>ABC Pvt Ltd</td>
-                    <td>GST123456</td>
-                    <td>Rahul Sharma</td>
-                    <td>abc@gmail.com</td>
-                    <td>9876543210</td>
-
-                    <td>
-
-                        <span class="badge bg-success">
-                            Active
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                        class="btn btn-warning btn-sm">
-
-                            Edit
-
-                        </button>
-
-                        <button
-                        class="btn btn-danger btn-sm">
-
-                            Delete
-
-                        </button>
-
-                    </td>
-
-                </tr>
+                {% for vendor in vendors %}
 
                 <tr>
 
-                    <td>2</td>
-                    <td>XYZ Traders</td>
-                    <td>GST789456</td>
-                    <td>Amit Patel</td>
-                    <td>xyz@gmail.com</td>
-                    <td>9123456780</td>
-
-                    <td>
-
-                        <span class="badge bg-danger">
-                            Inactive
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                        class="btn btn-warning btn-sm">
-
-                            Edit
-
-                        </button>
-
-                        <button
-                        class="btn btn-danger btn-sm">
-
-                            Delete
-
-                        </button>
-
-                    </td>
+                    <td>{{ vendor.0 }}</td>
+                    <td>{{ vendor.1 }}</td>
+                    <td>{{ vendor.2 }}</td>
+                    <td>{{ vendor.3 }}</td>
+                    <td>{{ vendor.4 }}</td>
+                    <td>{{ vendor.5 }}</td>
+                    <td>{{ vendor.6 }}</td>
+                    <td>{{ vendor.7 }}</td>
 
                 </tr>
+
+                {% endfor %}
 
             </tbody>
 

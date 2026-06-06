@@ -4,19 +4,44 @@
 
 <h2 class="mb-4">
 
-    Welcome {% if name %}{{ name }}{% else %}{{ email }}{% endif %}
+    Welcome
+    {% if name %}
+        {{ name }}
+    {% else %}
+        {{ email }}
+    {% endif %}
 
 </h2>
 
 <h5 class="text-muted mb-4">
 
-    Role: {{role}}
+    Role: {{ role }}
 
 </h5>
 
 <div class="row">
 
-    <div class="col-md-3">
+    <!-- Vendors -->
+
+    <div class="col-md-3 mb-3">
+
+        <div class="card shadow p-3">
+
+            <h5>
+                Vendors
+            </h5>
+
+            <h2>
+                {{ vendor_count }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- RFQ -->
+
+    <div class="col-md-3 mb-3">
 
         <div class="card shadow p-3">
 
@@ -25,14 +50,16 @@
             </h5>
 
             <h2>
-                5
+                {{ rfq_count }}
             </h2>
 
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <!-- Approvals -->
+
+    <div class="col-md-3 mb-3">
 
         <div class="card shadow p-3">
 
@@ -41,14 +68,16 @@
             </h5>
 
             <h2>
-                2
+                {{ approval_count }}
             </h2>
 
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <!-- Purchase Orders -->
+
+    <div class="col-md-3 mb-3">
 
         <div class="card shadow p-3">
 
@@ -57,14 +86,16 @@
             </h5>
 
             <h2>
-                3
+                {{ purchase_order_count }}
             </h2>
 
         </div>
 
     </div>
 
-    <div class="col-md-3">
+    <!-- Invoices -->
+
+    <div class="col-md-3 mb-3">
 
         <div class="card shadow p-3">
 
@@ -73,7 +104,7 @@
             </h5>
 
             <h2>
-                7
+                {{ invoice_count }}
             </h2>
 
         </div>
