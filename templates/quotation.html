@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Vendor Quotation Submission
+    </h2>
+
+    <!-- FORM -->
+
+    <div class="card shadow p-4 mb-4">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <select
+                    name="rfq_id"
+                    class="form-control"
+                    required>
+
+                        <option selected disabled>
+                            Select RFQ
+                        </option>
+
+                        {% for rfq in rfqs %}
+
+                        <option
+                        value="{{ rfq.0 }}">
+
+                            {{ rfq.1 }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <select
+                    name="vendor_id"
+                    class="form-control"
+                    required>
+
+                        <option selected disabled>
+                            Select Vendor
+                        </option>
+
+                        {% for rfq in rfqs %}
+
+                        <option
+                        value="{{ rfq.2 }}">
+
+                            {{ rfq.3 }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="number"
+                    step="0.01"
+                    name="price"
+                    class="form-control"
+                    placeholder="Quotation Price"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="number"
+                    name="delivery_days"
+                    class="form-control"
+                    placeholder="Delivery Days"
+                    required>
+
+                </div>
+
+                <div class="col-md-8 mb-3">
+
+                    <textarea
+                    name="remarks"
+                    class="form-control"
+                    placeholder="Remarks"></textarea>
+
+                </div>
+
+            </div>
+
+            <button
+            class="btn btn-primary">
+
+                Submit Quotation
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="card shadow p-3">
+
+        <table class="table table-bordered">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>RFQ</th>
+                    <th>Vendor</th>
+                    <th>Price</th>
+                    <th>Delivery</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for quotation in quotations %}
+
+                <tr>
+
+                    <td>{{ quotation.0 }}</td>
+                    <td>{{ quotation.1 }}</td>
+                    <td>{{ quotation.2 }}</td>
+                    <td>₹ {{ quotation.3 }}</td>
+                    <td>{{ quotation.4 }} Days</td>
+                    <td>{{ quotation.5 }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

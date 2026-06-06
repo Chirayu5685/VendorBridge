@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Quotation Comparison
+
+</h2>
+
+<div class="card shadow p-3">
+
+    <table
+    class="table table-bordered">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>ID</th>
+                <th>RFQ</th>
+                <th>Vendor</th>
+                <th>Price</th>
+                <th>Delivery Days</th>
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for q in quotations %}
+
+            <tr>
+
+                <td>{{ q.0 }}</td>
+                <td>{{ q.1 }}</td>
+                <td>{{ q.2 }}</td>
+
+                <td>
+                    ₹ {{ q.3 }}
+                </td>
+
+                <td>
+                    {{ q.4 }} Days
+                </td>
+
+                <td>
+
+                    {% if q.5 == 'pending' %}
+
+                    <span class="badge bg-warning">
+                        Pending
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-success">
+                        Approved
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

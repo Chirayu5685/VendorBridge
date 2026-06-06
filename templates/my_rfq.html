@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+
+        My RFQ Status
+
+    </h2>
+
+    <div class="card shadow p-3">
+
+        <table
+        class="table table-bordered">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Deadline</th>
+                    <th>Vendor</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for rfq in rfqs %}
+
+                <tr>
+
+                    <td>{{ rfq.0 }}</td>
+                    <td>{{ rfq.1 }}</td>
+                    <td>{{ rfq.2 }}</td>
+                    <td>{{ rfq.3 }}</td>
+                    <td>{{ rfq.4 }}</td>
+                    <td>{{ rfq.5 }}</td>
+                    <td>
+
+                        {% if rfq.6 == 'pending' %}
+
+                            <span
+                            class="badge bg-warning">
+
+                                Pending
+
+                            </span>
+
+                        {% elif rfq.6 == 'quoted' %}
+
+                            <span
+                            class="badge bg-info">
+
+                                Quoted
+
+                            </span>
+
+                        {% elif rfq.6 == 'approved' %}
+
+                            <span
+                            class="badge bg-success">
+
+                                Approved
+
+                            </span>
+
+                        {% else %}
+
+                            <span
+                            class="badge bg-danger">
+
+                                Rejected
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

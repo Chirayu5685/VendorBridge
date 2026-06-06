@@ -203,7 +203,44 @@ def forgot_password(request):
         request,
         'forgot_password.html'
     )
+def purchase_order_page(request):
 
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+        q.quotation_id,
+        r.title,
+        v.company_name,
+        q.price,
+        q.status
+
+        FROM quotations q
+
+        JOIN rfq r
+        ON q.rfq_id =
+        r.rfq_id
+
+        JOIN vendors v
+        ON q.vendor_id =
+        v.vendor_id
+
+        WHERE q.status =
+        'approved'
+        """
+    )
+
+    purchase_orders = cursor.fetchall()
+
+    return render(
+        request,
+        'purchase_order.html',
+        {
+            'purchase_orders':
+            purchase_orders
+        }
+    )
 def vendors_page(request):
 
     # Admin only
@@ -289,7 +326,42 @@ def vendors_page(request):
             'vendors': vendors
         }
     )
+def invoice_page(request):
 
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+        q.quotation_id,
+        r.title,
+        v.company_name,
+        q.price,
+        q.status
+
+        FROM quotations q
+
+        JOIN rfq r
+        ON q.rfq_id = r.rfq_id
+
+        JOIN vendors v
+        ON q.vendor_id = v.vendor_id
+        """
+    )
+
+    invoices = cursor.fetchall()
+
+    return render(
+        request,
+        'invoice.html',
+        {
+            'invoices': invoices,
+            'role':
+            request.session.get(
+                'role'
+            )
+        }
+    )
 # DASHBOARD
 
 def dashboard(request):
@@ -365,13 +437,105 @@ def dashboard(request):
 
 def rfq_page(request):
 
+    # Only Procurement Officer
+
     if request.session.get(
         'role'
     ) != 'procurement_officer':
 
         return redirect('dashboard')
 
-    return render(request, 'rfq.html')
+    cursor = connection.cursor()
+
+    # Add RFQ
+
+    if request.method == "POST":
+
+        title = request.POST.get(
+            'title'
+        )
+
+        product_name = request.POST.get(
+            'product_name'
+        )
+
+        quantity = request.POST.get(
+            'quantity'
+        )
+
+        deadline = request.POST.get(
+            'deadline'
+        )
+
+        vendor_id = request.POST.get(
+            'vendor_id'
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO rfq
+            (
+                title,
+                product_name,
+                quantity,
+                deadline,
+                vendor_id
+            )
+            VALUES
+            (%s,%s,%s,%s,%s)
+            """,
+            [
+                title,
+                product_name,
+                quantity,
+                deadline,
+                vendor_id
+            ]
+        )
+
+    # Fetch Vendors dropdown
+
+    cursor.execute(
+        """
+        SELECT vendor_id,
+        company_name
+        FROM vendors
+        """
+    )
+
+    vendors = cursor.fetchall()
+
+    # Fetch RFQ table
+
+    cursor.execute(
+        """
+        SELECT
+        r.rfq_id,
+        r.title,
+        r.product_name,
+        r.quantity,
+        r.deadline,
+        v.company_name,
+        r.status
+
+        FROM rfq r
+
+        LEFT JOIN vendors v
+        ON r.vendor_id =
+        v.vendor_id
+        """
+    )
+
+    rfqs = cursor.fetchall()
+
+    return render(
+        request,
+        'rfq.html',
+        {
+            'vendors': vendors,
+            'rfqs': rfqs
+        }
+    )
 
 
 # APPROVAL PAGE
@@ -385,7 +549,76 @@ def approval_page(request):
 
         return redirect('dashboard')
 
-    return render(request, 'approval.html')
+    cursor = connection.cursor()
+
+    # APPROVE
+
+    if request.GET.get('approve'):
+
+        quotation_id = request.GET.get(
+            'approve'
+        )
+
+        cursor.execute(
+            """
+            UPDATE quotations
+            SET status='approved'
+            WHERE quotation_id=%s
+            """,
+            [quotation_id]
+        )
+
+    # REJECT
+
+    if request.GET.get('reject'):
+
+        quotation_id = request.GET.get(
+            'reject'
+        )
+
+        cursor.execute(
+            """
+            UPDATE quotations
+            SET status='rejected'
+            WHERE quotation_id=%s
+            """,
+            [quotation_id]
+        )
+
+    # FETCH
+
+    cursor.execute(
+        """
+        SELECT
+        q.quotation_id,
+        r.title,
+        v.company_name,
+        q.price,
+        q.delivery_days,
+        q.status
+
+        FROM quotations q
+
+        JOIN rfq r
+        ON q.rfq_id =
+        r.rfq_id
+
+        JOIN vendors v
+        ON q.vendor_id =
+        v.vendor_id
+        """
+    )
+
+    quotations = cursor.fetchall()
+
+    return render(
+        request,
+        'approval.html',
+        {
+            'quotations':
+            quotations
+        }
+    )
 
 
 # QUOTATION PAGE
@@ -399,11 +632,150 @@ def quotation_page(request):
 
         return redirect('dashboard')
 
-    return render(
-        request,
-        'quotation.html'
+    cursor = connection.cursor()
+
+    # Submit quotation
+
+    if request.method == "POST":
+
+        rfq_id = request.POST.get(
+            'rfq_id'
+        )
+
+        vendor_id = request.POST.get(
+            'vendor_id'
+        )
+
+        price = request.POST.get(
+            'price'
+        )
+
+        delivery_days = request.POST.get(
+            'delivery_days'
+        )
+
+        remarks = request.POST.get(
+            'remarks'
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO quotations
+            (
+                rfq_id,
+                vendor_id,
+                price,
+                delivery_days,
+                remarks
+            )
+            VALUES
+            (%s,%s,%s,%s,%s)
+            """,
+            [
+                rfq_id,
+                vendor_id,
+                price,
+                delivery_days,
+                remarks
+            ]
+        )
+
+    # Fetch RFQ + ALL vendors
+
+    cursor.execute(
+        """
+        SELECT
+        r.rfq_id,
+        r.title,
+        v.vendor_id,
+        v.company_name
+
+        FROM rfq r
+        CROSS JOIN vendors v
+        """
     )
 
+    rfqs = cursor.fetchall()
+
+    # Submitted quotations
+
+    cursor.execute(
+        """
+        SELECT
+        q.quotation_id,
+        r.title,
+        v.company_name,
+        q.price,
+        q.delivery_days,
+        q.status
+
+        FROM quotations q
+
+        JOIN rfq r
+        ON q.rfq_id =
+        r.rfq_id
+
+        JOIN vendors v
+        ON q.vendor_id =
+        v.vendor_id
+        """
+    )
+
+    quotations = cursor.fetchall()
+
+    return render(
+        request,
+        'quotation.html',
+        {
+            'rfqs': rfqs,
+            'quotations':
+            quotations,
+            'role':
+            request.session.get(
+                'role'
+            )
+        }
+    )
+def quotation_comparison(request):
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+        q.quotation_id,
+        r.title,
+        v.company_name,
+        q.price,
+        q.delivery_days,
+        q.status
+
+        FROM quotations q
+
+        JOIN rfq r
+        ON q.rfq_id =
+        r.rfq_id
+
+        JOIN vendors v
+        ON q.vendor_id =
+        v.vendor_id
+
+        ORDER BY
+        r.title,
+        q.price ASC
+        """
+    )
+
+    quotations = cursor.fetchall()
+
+    return render(
+        request,
+        'quotation_comparison.html',
+        {
+            'quotations':
+            quotations
+        }
+    )
 
 # LOGOUT
 
@@ -413,7 +785,51 @@ def logout(request):
 
     return redirect('login')
 
+def my_rfq_page(request):
 
+    # Vendor only
+
+    if request.session.get(
+        'role'
+    ) != 'vendor':
+
+        return redirect('dashboard')
+
+    cursor = connection.cursor()
+
+    # TEMPORARY:
+    # Show all RFQ assigned to vendors
+
+    cursor.execute(
+        """
+        SELECT
+        r.rfq_id,
+        r.title,
+        r.product_name,
+        r.quantity,
+        r.deadline,
+        v.company_name,
+        r.status
+
+        FROM rfq r
+
+        JOIN vendors v
+        ON r.vendor_id =
+        v.vendor_id
+        """
+    )
+
+    rfqs = cursor.fetchall()
+
+    return render(
+        request,
+        'my_rfq.html',
+        {
+            'rfqs': rfqs
+        }
+    )
+
+    
 urlpatterns = [
 
     path('admin/', admin.site.urls),
@@ -434,14 +850,22 @@ urlpatterns = [
         forgot_password,
         name='forgot_password'
     ),
-
+    path(
+    'quotation-comparison/',
+    quotation_comparison,
+    name='quotation_comparison'
+    ),
     # Dashboard
     path(
         'dashboard/',
         dashboard,
         name='dashboard'
     ),
-
+    path(
+        'invoice/',
+        invoice_page,
+        name='invoice'
+    ),
     # Vendors
     path(
         'vendors/',
@@ -449,13 +873,22 @@ urlpatterns = [
         name='vendors'
     ),
 
+    path(
+    'my-rfq/',
+    my_rfq_page,
+    name='my_rfq'
+    ),
     # RFQ
     path(
         'rfq/',
         rfq_page,
         name='rfq'
     ),
-
+    path(
+        'purchase-order/',
+        purchase_order_page,
+        name='purchase_order'
+    ),
     # Approval
     path(
         'approval/',
@@ -469,7 +902,11 @@ urlpatterns = [
         quotation_page,
         name='quotation'
     ),
-
+    path(
+        'quotation-comparison/',
+        quotation_comparison,
+        name='quotation_comparison'
+    ),
     # Logout
     path(
         'logout/',

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        RFQ Management
+    </h2>
+
+    <!-- RFQ FORM -->
+
+    <div class="card shadow p-4 mb-4">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    placeholder="RFQ Title"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="text"
+                    name="product_name"
+                    class="form-control"
+                    placeholder="Product Name"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="number"
+                    name="quantity"
+                    class="form-control"
+                    placeholder="Quantity"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <input
+                    type="date"
+                    name="deadline"
+                    class="form-control"
+                    required>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <select
+                    name="vendor_id"
+                    class="form-control"
+                    required>
+
+                        <option selected disabled>
+                            Select Vendor
+                        </option>
+
+                        {% for vendor in vendors %}
+
+                        <option
+                        value="{{ vendor.0 }}">
+
+                            {{ vendor.1 }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+            class="btn btn-primary">
+
+                Create RFQ
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- RFQ TABLE -->
+
+    <div class="card shadow p-3">
+
+        <table class="table table-bordered">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Deadline</th>
+                    <th>Vendor</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for rfq in rfqs %}
+
+                <tr>
+
+                    <td>{{ rfq.0 }}</td>
+                    <td>{{ rfq.1 }}</td>
+                    <td>{{ rfq.2 }}</td>
+                    <td>{{ rfq.3 }}</td>
+                    <td>{{ rfq.4 }}</td>
+                    <td>{{ rfq.5 }}</td>
+                    <td>{{ rfq.6 }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
